@@ -16,6 +16,7 @@ struct User
     int userId;
     char username[100];
     char password[100];
+    int fine;
 };
 
 void showWelcomeDashboard()
@@ -36,6 +37,10 @@ int loginUser();
 void addBook();
 void deleteBook();
 void displayBooks();
+void borrowBook();
+void returnBook();
+void searchBooks();
+void calculateFine(int userId);
 
 struct Book books[100];
 int bookCount = 0;
@@ -104,6 +109,39 @@ int main()
         case 5:
             displayBooks();
             break;
+        case 6:
+            if (loggedInUserId != -1)
+            {
+                borrowBook();
+            }
+            else
+            {
+                printf("\t\t\t\t\t\t\t\t   Please login first.\n\n");
+            }
+            break;
+        case 7:
+            if (loggedInUserId != -1)
+            {
+                returnBook();
+            }
+            else
+            {
+                printf("\t\t\t\t\t\t\t\t   Please login first.\n\n");
+            }
+            break;
+        case 8:
+            searchBooks();
+            break;
+        case 9:
+            if (loggedInUserId != -1)
+            {
+                calculateFine(loggedInUserId);
+            }
+            else
+            {
+                printf("\t\t\t\t\t\t\t\t   Please login first.\n\n");
+            }
+            break;
         case 10:
             printf("\n\t\t\t\t\t\t\t\t   Exiting... Goodbye!\n\n");
             exit(0);
@@ -125,6 +163,7 @@ void registerUser()
     scanf("%s", newUser.password);
 
     newUser.userId = userCount + 1;
+    newUser.fine = 0;
 
     users[userCount] = newUser;
     userCount++;
@@ -219,5 +258,137 @@ void displayBooks()
             printf("\t\t\t\t\t\t\t\t   Availability: %s\n", books[i].availability == 1 ? "Available" : "Not Available");
             printf("\t\t\t\t\t\t\t\t   -----------------------\n");
         }
+    }
+}
+
+void borrowBook()
+{
+    int bookId;
+
+    printf("\n\t\t\t\t\t\t\t\t   Enter Book ID to borrow: ");
+    scanf("%d", &bookId);
+
+    int index = -1;
+
+    for (int i = 0; i < bookCount; i++)
+    {
+        if (books[i].bookId == bookId)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1)
+    {
+        if (books[index].availability == 1)
+        {
+            books[index].availability = 0;
+            printf("\t\t\t\t\t\t\t\t   Book borrowed successfully.\n\n");
+        }
+        else
+        {
+            printf("\t\t\t\t\t\t\t\t   Book not available for borrowing.\n\n");
+        }
+    }
+    else
+    {
+        printf("\t\t\t\t\t\t\t\t   Book not found.\n\n");
+    }
+}
+
+void returnBook()
+{
+    int bookId;
+
+    printf("\n\t\t\t\t\t\t\t\t   Enter Book ID to return: ");
+    scanf("%d", &bookId);
+
+    int index = -1;
+
+    for (int i = 0; i < bookCount; i++)
+    {
+        if (books[i].bookId == bookId)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1)
+    {
+        if (books[index].availability == 0)
+        {
+            books[index].availability = 1;
+            printf("\t\t\t\t\t\t\t\t   Book returned successfully.\n\n");
+        }
+        else
+        {
+            printf("\t\t\t\t\t\t\t\t   Invalid operation. Book is already available.\n\n");
+        }
+    }
+    else
+    {
+        printf("\t\t\t\t\t\t\t\t   Book not found.\n\n");
+    }
+}
+
+void searchBooks()
+{
+    char searchQuery[100];
+
+    printf("\n\t\t\t\t\t\t\t\t   Enter Search Query: ");
+    scanf(" %[^\n]", searchQuery);
+
+    printf("\t\t\t\t\t\t\t\t   --- Search Results ---\n");
+    for (int i = 0; i < bookCount; i++)
+    {
+        if (strstr(books[i].title, searchQuery) != NULL || strstr(books[i].author, searchQuery) != NULL)
+        {
+            printf("\t\t\t\t\t\t\t\t   Book ID: %d\n", books[i].bookId);
+            printf("\t\t\t\t\t\t\t\t   Title: %s\n", books[i].title);
+            printf("\t\t\t\t\t\t\t\t   Author: %s\n", books[i].author);
+            printf("\t\t\t\t\t\t\t\t   Availability: %s\n", books[i].availability == 1 ? "Available" : "Not Available");
+            printf("\t\t\t\t\t\t\t\t   -----------------------\n");
+        }
+    }
+}
+
+void calculateFine(int userId)
+{
+    int days;
+    int finePerDay = 5;
+
+    printf("\n\t\t\t\t\t\t\t\t   Enter the number of days the book is overdue: ");
+    scanf("%d", &days);
+
+    if (days > 0)
+    {
+        int index = -1;
+
+        for (int i = 0; i < userCount; i++)
+        {
+            if (users[i].userId == userId)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1)
+        {
+            int fine = days * finePerDay;
+            users[index].fine += fine;
+
+            printf("\t\t\t\t\t\t\t\t   Fine calculated successfully. Total fine for User ID %d is %d BDT.\n\n", userId, users[index].fine);
+        }
+        else
+        {
+            printf("\t\t\t\t\t\t\t\t   User not found.\n\n");
+        }
+    }
+    else
+    {
+        printf("\t\t\t\t\t\t\t\t   Invalid number of days.\n\n");
     }
 }
