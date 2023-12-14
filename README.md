@@ -5,3 +5,7 @@
 3. Borrowing and Returning Books: Enable users to borrow and return books, updating availability status accordingly.
 4. Search and Filtering: Implement a search feature to help users find books based on title, author, and ID. Allow filtering based on availability.
 5. Fine Calculation: Implement a system to calculate fines for late book returns and notify users about the amount due. Consider factors like the number of overdue days and the fine per day.
+
+
+# Here, you can see the slides.
+https://docs.google.com/presentation/d/1VgZO-Dc5XSGRY29BTAb_MJEN6coNf3zj0ds3AuwC2Bw/edit?usp=sharing
